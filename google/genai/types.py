@@ -7691,7 +7691,7 @@ class LiveServerToolCallCancellation(_common.BaseModel):
   server turns.
   """
 
-  ids: Optional[list[int]] = Field(
+  ids: Optional[list[str]] = Field(
       default=None, description="""The ids of the tool calls to be cancelled."""
   )
 
@@ -7704,7 +7704,7 @@ class LiveServerToolCallCancellationDict(TypedDict, total=False):
   server turns.
   """
 
-  ids: Optional[list[int]]
+  ids: Optional[list[str]]
   """The ids of the tool calls to be cancelled."""
 
 
