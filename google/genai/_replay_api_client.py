@@ -73,6 +73,11 @@ def _redact_request_url(url: str) -> str:
       url,
   )
   result = re.sub(
+      r'.*-aiplatform.googleapis.com/[^/]+/',
+      '{VERTEX_URL_PREFIX}/',
+      result,
+  )
+  result = re.sub(
       r'https://generativelanguage.googleapis.com/[^/]+',
       '{MLDEV_URL_PREFIX}',
       result,
@@ -164,7 +169,7 @@ class ReplayFile(BaseModel):
 
 
 class ReplayApiClient(ApiClient):
-  """For integration testing, send recorded responese or records a response."""
+  """For integration testing, send recorded response or records a response."""
 
   def __init__(
       self,

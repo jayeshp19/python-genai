@@ -23,35 +23,71 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, Tuple, TypedDict, Union
 from urllib.parse import urlparse, urlunparse
 
 import google.auth
 import google.auth.credentials
 from google.auth.transport.requests import AuthorizedSession
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 import requests
 
 from . import errors
+from . import version
 
 
-class HttpOptions(TypedDict):
+class HttpOptions(BaseModel):
+  """HTTP options for the api client."""
+  model_config = ConfigDict(extra='forbid')
+
+  base_url: Optional[str] = Field(
+      default=None,
+      description="""The base URL for the AI platform service endpoint.""",
+  )
+  api_version: Optional[str] = Field(
+      default=None,
+      description="""Specifies the version of the API to use.""",
+  )
+  headers: Optional[dict[str, str]] = Field(
+      default=None,
+      description="""Additional HTTP headers to be sent with the request.""",
+  )
+  response_payload: Optional[dict] = Field(
+      default=None,
+      description="""If set, the response payload will be returned int the supplied dict.""",
+  )
+  timeout: Optional[Union[float, Tuple[float, float]]] = Field(
+      default=None,
+      description="""Timeout for the request in seconds.""",
+  )
+  skip_project_and_location_in_path: bool = Field(
+      default=False,
+      description="""If set to True, the project and location will not be appended to the path.""",
+  )
+
+
+class HttpOptionsDict(TypedDict):
   """HTTP options for the api client."""
 
-  base_url: str = None
+  base_url: Optional[str] = None
   """The base URL for the AI platform service endpoint."""
-  api_version: str = None
+  api_version: Optional[str] = None
   """Specifies the version of the API to use."""
-  headers: dict[str, dict] = None
+  headers: Optional[dict[str, str]] = None
   """Additional HTTP headers to be sent with the request."""
-  response_payload: dict = None
+  response_payload: Optional[dict] = None
   """If set, the response payload will be returned int the supplied dict."""
+  timeout: Optional[Union[float, Tuple[float, float]]] = None
+  """Timeout for the request in seconds."""
+  skip_project_and_location_in_path: bool = False
+  """If set to True, the project and location will not be appended to the path."""
+
+HttpOptionsOrDict = Union[HttpOptions, HttpOptionsDict]
 
 
 def _append_library_version_headers(headers: dict[str, str]) -> None:
   """Appends the telemetry header to the headers dict."""
-  # TODO: Automate revisions to the SDK library version.
-  library_label = f'google-genai-sdk/0.3.0'
+  library_label = f'google-genai-sdk/{version.__version__}'
   language_label = 'gl-python/' + sys.version.split()[0]
   version_header_value = f'{library_label} {language_label}'
   if (
@@ -71,20 +107,24 @@ def _append_library_version_headers(headers: dict[str, str]) -> None:
 
 
 def _patch_http_options(
-    options: HttpOptions, patch_options: HttpOptions
-) -> HttpOptions:
+    options: HttpOptionsDict, patch_options: HttpOptionsDict
+) -> HttpOptionsDict:
   # use shallow copy so we don't override the original objects.
-  copy_option = HttpOptions()
+  copy_option = HttpOptionsDict()
   copy_option.update(options)
-  for k, v in patch_options.items():
+  for patch_key, patch_value in patch_options.items():
     # if both are dicts, update the copy.
     # This is to handle cases like merging headers.
-    if isinstance(v, dict) and isinstance(copy_option.get(k, None), dict):
-      copy_option[k] = {}
-      copy_option[k].update(options[k])  # shallow copy from original options.
-      copy_option[k].update(v)
-    elif v is not None:  # Accept empty values.
-      copy_option[k] = v
+    if isinstance(patch_value, dict) and isinstance(
+        copy_option.get(patch_key, None), dict
+    ):
+      copy_option[patch_key] = {}
+      copy_option[patch_key].update(
+          options[patch_key]
+      )  # shallow copy from original options.
+      copy_option[patch_key].update(patch_value)
+    elif patch_value is not None:  # Accept empty values.
+      copy_option[patch_key] = patch_value
   _append_library_version_headers(copy_option['headers'])
   return copy_option
 
@@ -102,6 +142,7 @@ class HttpRequest:
   url: str
   method: str
   data: Union[dict[str, object], bytes]
+  timeout: Optional[Union[float, Tuple[float, float]]] = None
 
 
 class HttpResponse:
@@ -147,7 +188,7 @@ class ApiClient:
       credentials: google.auth.credentials.Credentials = None,
       project: Union[str, None] = None,
       location: Union[str, None] = None,
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsOrDict = None,
   ):
     self.vertexai = vertexai
     if self.vertexai is None:
@@ -163,11 +204,20 @@ class ApiClient:
           'Project/location and API key are mutually exclusive in the client initializer.'
       )
 
+    # Validate http_options if a dict is provided.
+    if isinstance(http_options, dict):
+      try:
+        HttpOptions.model_validate(http_options)
+      except ValidationError as e:
+        raise ValueError(f'Invalid http_options: {e}')
+    elif(isinstance(http_options, HttpOptions)):
+      http_options = http_options.model_dump()
+
     self.api_key: Optional[str] = None
     self.project = project or os.environ.get('GOOGLE_CLOUD_PROJECT', None)
     self.location = location or os.environ.get('GOOGLE_CLOUD_LOCATION', None)
     self._credentials = credentials
-    self._http_options = HttpOptions()
+    self._http_options = HttpOptionsDict()
 
     if self.vertexai:
       if not self.project:
@@ -208,7 +258,7 @@ class ApiClient:
       http_method: str,
       path: str,
       request_dict: dict[str, object],
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsDict = None,
   ) -> HttpRequest:
     # Remove all special dict keys such as _url and _query.
     keys_to_delete = [key for key in request_dict.keys() if key.startswith('_')]
@@ -221,7 +271,14 @@ class ApiClient:
       )
     else:
       patched_http_options = self._http_options
-    if self.vertexai and not path.startswith('projects/'):
+    skip_project_and_location_in_path_val = patched_http_options.get(
+        'skip_project_and_location_in_path', False
+    )
+    if (
+        self.vertexai
+        and not path.startswith('projects/')
+        and not skip_project_and_location_in_path_val
+    ):
       path = f'projects/{self.project}/locations/{self.location}/' + path
     url = _join_url_path(
         patched_http_options['base_url'],
@@ -232,6 +289,7 @@ class ApiClient:
         url=url,
         headers=patched_http_options['headers'],
         data=request_dict,
+        timeout=patched_http_options.get('timeout', None),
     )
 
   def _request(
@@ -250,10 +308,10 @@ class ApiClient:
           http_request.method.upper(),
           http_request.url,
           headers=http_request.headers,
-          data=json.dumps(http_request.data, cls=RequestJsonEncoder) if http_request.data else None,
-          # TODO: support timeout in RequestOptions so it can be configured
-          # per methods.
-          timeout=None,
+          data=json.dumps(http_request.data, cls=RequestJsonEncoder)
+          if http_request.data
+          else None,
+          timeout=http_request.timeout,
       )
       errors.APIError.raise_for_response(response)
       return HttpResponse(
@@ -275,13 +333,14 @@ class ApiClient:
         data = http_request.data
 
     http_session = requests.Session()
-    request = requests.Request(
+    response = http_session.request(
         method=http_request.method,
         url=http_request.url,
         headers=http_request.headers,
         data=data,
-    ).prepare()
-    response = http_session.send(request, stream=stream)
+        timeout=http_request.timeout,
+        stream=stream,
+    )
     errors.APIError.raise_for_response(response)
     return HttpResponse(
         response.headers, response if stream else [response.text]
@@ -307,8 +366,10 @@ class ApiClient:
           stream=stream,
       )
 
-  def get_read_only_http_options(self) -> HttpOptions:
-    copied = HttpOptions()
+  def get_read_only_http_options(self) -> HttpOptionsDict:
+    copied = HttpOptionsDict()
+    if isinstance(self._http_options, BaseModel):
+      self._http_options = self._http_options.model_dump()
     copied.update(self._http_options)
     return copied
 
@@ -317,7 +378,7 @@ class ApiClient:
       http_method: str,
       path: str,
       request_dict: dict[str, object],
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsDict = None,
   ):
     http_request = self._build_request(
         http_method, path, request_dict, http_options
@@ -332,7 +393,7 @@ class ApiClient:
       http_method: str,
       path: str,
       request_dict: dict[str, object],
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsDict = None,
   ):
     http_request = self._build_request(
         http_method, path, request_dict, http_options
@@ -349,7 +410,7 @@ class ApiClient:
       http_method: str,
       path: str,
       request_dict: dict[str, object],
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsDict = None,
   ) -> dict[str, object]:
     http_request = self._build_request(
         http_method, path, request_dict, http_options
@@ -365,7 +426,7 @@ class ApiClient:
       http_method: str,
       path: str,
       request_dict: dict[str, object],
-      http_options: HttpOptions = None,
+      http_options: HttpOptionsDict = None,
   ):
     http_request = self._build_request(
         http_method, path, request_dict, http_options
