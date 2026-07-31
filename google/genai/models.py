@@ -7091,7 +7091,7 @@ class Models(_api_module.BaseModule):
           time.sleep(10)
           operation = client.operations.get(operation)
 
-      operation.result.generated_videos[0].video.uri
+      operation.response.generated_videos[0].video.uri
       ```
     """
     if prompt or image or video:
