@@ -49,6 +49,7 @@ from ...types.interactions.documentcontent import DocumentContent
 from ...types.interactions.dynamicagentconfig import DynamicAgentConfig
 from ...types.interactions.empty import Empty as InteractionDeleteResponse
 from ...types.interactions.environment import Environment
+from ...types.interactions.error import Error
 from ...types.interactions.errorevent import ErrorEvent
 from ...types.interactions.filecitation import FileCitation
 from ...types.interactions.filesearchcallstep import FileSearchCallStep
@@ -117,8 +118,6 @@ from . import googlemapsresult
 from . import googlemapsresultstep
 from . import googlesearchcallstep
 from . import googlesearchresultstep
-from . import interaction
-from . import modeloutputstep
 from . import placecitation
 from . import retrievalcalldelta
 from . import stepdelta
@@ -148,6 +147,7 @@ __all__ = [
     "DocumentContent",
     "DynamicAgentConfig",
     "Environment",
+    "Error",
     "ErrorEvent",
     "FileCitation",
     "FileSearchCallStep",
@@ -221,8 +221,6 @@ __all__ = [
     "googlemapsresultstep",
     "googlesearchcallstep",
     "googlesearchresultstep",
-    "interaction",
-    "modeloutputstep",
     "placecitation",
     "retrievalcalldelta",
     "stepdelta",
