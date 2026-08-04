@@ -117,6 +117,7 @@ from . import googlemapsresult
 from . import googlemapsresultstep
 from . import googlesearchcallstep
 from . import googlesearchresultstep
+from . import interaction
 from . import modeloutputstep
 from . import placecitation
 from . import retrievalcalldelta
@@ -220,6 +221,7 @@ __all__ = [
     "googlemapsresultstep",
     "googlesearchcallstep",
     "googlesearchresultstep",
+    "interaction",
     "modeloutputstep",
     "placecitation",
     "retrievalcalldelta",
