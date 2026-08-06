@@ -55,12 +55,12 @@ class VideoContentParam(TypedDict):
 
     data: NotRequired[Union[str, Base64FileInput]]
     r"""The video content."""
-    mime_type: NotRequired[VideoContentMimeType]
-    r"""The mime type of the video."""
     resolution: NotRequired[MediaResolution]
     type: Literal["video"]
     uri: NotRequired[str]
     r"""The URI of the video."""
+    mime_type: NotRequired[VideoContentMimeType]
+    r"""The mime type of the video."""
 
 
 class VideoContent(BaseModel):
@@ -68,9 +68,6 @@ class VideoContent(BaseModel):
 
     data: Optional[Base64EncodedString] = None
     r"""The video content."""
-
-    mime_type: Optional[VideoContentMimeType] = None
-    r"""The mime type of the video."""
 
     resolution: Optional[MediaResolution] = None
 
@@ -82,9 +79,12 @@ class VideoContent(BaseModel):
     uri: Optional[str] = None
     r"""The URI of the video."""
 
+    mime_type: Optional[VideoContentMimeType] = None
+    r"""The mime type of the video."""
+
     @model_serializer(mode="wrap")
     def serialize_model(self, handler):
-        optional_fields = set(["data", "mime_type", "resolution", "uri"])
+        optional_fields = set(["data", "resolution", "uri", "mime_type"])
         serialized = handler(self)
         m = {}
 
