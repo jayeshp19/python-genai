@@ -1311,6 +1311,17 @@ class TurnCompleteReason(_common.CaseInSensitiveEnum):
   """Max regeneration attempts reached."""
 
 
+class InteractionStatus(_common.CaseInSensitiveEnum):
+  """The different activity states of the live session."""
+
+  INTERACTION_STATUS_UNSPECIFIED = 'INTERACTION_STATUS_UNSPECIFIED'
+  """Unspecified interaction status."""
+  IN_PROGRESS = 'IN_PROGRESS'
+  """The server is still actively processing user input or running background reasoning. More model output may follow."""
+  REQUIRES_ACTION = 'REQUIRES_ACTION'
+  """The server has completed all processing and background reasoning."""
+
+
 class VadSignalType(_common.CaseInSensitiveEnum):
   """The type of the VAD signal."""
 
@@ -20274,6 +20285,10 @@ class LiveServerContent(_common.BaseModel):
       default=None,
       description="""Low latency transcription updated while the user is speaking.""",
   )
+  interaction_status: Optional[InteractionStatus] = Field(
+      default=None,
+      description="""The current activity status of the live session. Always sent alongside `turn_complete`.""",
+  )
 
 
 class LiveServerContentDict(TypedDict, total=False):
@@ -20329,6 +20344,9 @@ class LiveServerContentDict(TypedDict, total=False):
 
   interim_input_transcription: Optional[TranscriptionDict]
   """Low latency transcription updated while the user is speaking."""
+
+  interaction_status: Optional[InteractionStatus]
+  """The current activity status of the live session. Always sent alongside `turn_complete`."""
 
 
 LiveServerContentOrDict = Union[LiveServerContent, LiveServerContentDict]
