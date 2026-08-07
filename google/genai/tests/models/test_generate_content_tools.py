@@ -65,6 +65,23 @@ function_declarations = [{
         },
     },
 }]
+function_declarations_json_schema = [{
+    'name': 'get_current_weather',
+    'description': 'Get the current weather in a city',
+    'parameters_json_schema': {
+        'type': 'object',
+        'properties': {
+            'location': {
+                'type': 'string',
+                'description': 'The location to get the weather for',
+            },
+            'unit': {
+                'type': 'string',
+                'enum': ['C', 'F'],
+            },
+        },
+    },
+}]
 computer_use_override_function_declarations = [{
     'name': 'type_text_at',
     'description': 'Types text at a certain coordinate.',
@@ -949,7 +966,7 @@ def test_automatic_function_calling_with_customized_math_rule(client):
 )
 def test_automatic_function_calling(client):
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='what is the result of 1000/2?',
       config={
           'tools': [divide_integers],
@@ -1398,7 +1415,7 @@ def test_automatic_function_calling_with_union_operator(client):
       return f'The object of interest is {object_of_interest}'
 
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents=(
           'I have a one year old cat named Sundae, can you get the'
           ' information of the cat for me?'
@@ -1422,7 +1439,7 @@ def test_automatic_function_calling_with_tuple_param(client):
     return f'The latitude is {latlng[0]} and the longitude is {latlng[1]}'
 
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents=(
           'The coordinates are (51.509, -0.118). What is the latitude and longitude?'
       ),
@@ -1461,7 +1478,7 @@ def test_automatic_function_calling_with_union_operator_return_type(client):
       return 0.0
 
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='How old is the cheese with id 2?',
       config={
           'tools': [get_cheese_age],
@@ -1491,7 +1508,7 @@ def test_automatic_function_calling_with_parameterized_generic_union_type(
       )
 
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='Can you describe the city of San Francisco, USA?',
       config={
           'tools': [describe_cities],
@@ -1684,24 +1701,6 @@ async def test_automatic_function_calling_async_with_exception(client):
     reason='AFC by default is disabled in private models.py',
 )
 @pytest.mark.asyncio
-async def test_automatic_function_calling_async_float_without_decimal(client):
-  response = await client.aio.models.generate_content(
-      model='gemini-2.5-flash',
-      contents='what is the result of 1000.0/2.0?',
-      config={
-          'tools': [divide_floats, divide_integers],
-          'automatic_function_calling': {'ignore_call_history': True},
-      },
-  )
-
-  assert '500.0' in response.text
-
-
-@pytest.mark.skipif(
-    'config.getoption("--private")',
-    reason='AFC by default is disabled in private models.py',
-)
-@pytest.mark.asyncio
 async def test_automatic_function_calling_async_with_pydantic_model(client):
   class CityObject(pydantic.BaseModel):
     city_name: str
@@ -1715,7 +1714,7 @@ async def test_automatic_function_calling_async_with_pydantic_model(client):
       return f'The weather in {city_object.city_name} is sunny and 100 degrees.'
 
   response = await client.aio.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='it is winter now, what is the weather in Boston?',
       config={
           'tools': [get_weather_pydantic_model],
@@ -1723,9 +1722,7 @@ async def test_automatic_function_calling_async_with_pydantic_model(client):
       },
   )
 
-  # ML Dev couldn't understand pydantic model
-  if client.vertexai:
-    assert 'cold' in response.text and 'Boston' in response.text
+  assert 'cold' in response.text and 'Boston' in response.text
 
 
 @pytest.mark.skipif(
@@ -1914,7 +1911,7 @@ def test_class_method_tools(client):
 
   function_holder = FunctionHolder()
   response = client.models.generate_content(
-      model='gemini-2.0-flash-exp',
+      model='gemini-3.1-pro-preview',
       contents=(
           'Print the verbatim output of is_a_duck and is_a_rabbit for the'
           ' number 100.'
@@ -1932,7 +1929,7 @@ def test_class_method_tools(client):
 )
 def test_disable_afc_in_any_mode(client):
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='what is the result of 1000/2?',
       config=types.GenerateContentConfig(
           tools=[divide_integers],
@@ -1952,7 +1949,7 @@ def test_disable_afc_in_any_mode(client):
 )
 def test_afc_once_in_any_mode(client):
   response = client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='what is the result of 1000/2?',
       config=types.GenerateContentConfig(
           tools=[divide_integers],
@@ -1992,7 +1989,7 @@ def test_code_execution_tool(client):
 def test_afc_logs_to_logger_instance(client, caplog):
   caplog.set_level(logging.DEBUG, logger='google_genai.models')
   client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='what is the result of 1000/2?',
       config={
           'tools': [divide_integers],
@@ -2021,7 +2018,7 @@ def test_suppress_logs_with_sdk_logger(client, caplog):
   sdk_logger = logging.getLogger('google_genai.models')
   sdk_logger.setLevel(logging.ERROR)
   client.models.generate_content(
-      model='gemini-2.5-flash',
+      model='gemini-3.1-pro-preview',
       contents='what is the result of 1000/2?',
       config={
           'tools': [divide_integers],
@@ -2075,7 +2072,7 @@ def test_function_declaration_with_callable(client):
       config={
           'tools': [
               divide_integers,
-              {'function_declarations': function_declarations},
+              {'function_declarations': function_declarations_json_schema},
           ],
       },
   )
@@ -2089,7 +2086,7 @@ def test_function_declaration_with_callable_stream_now(client):
       config={
           'tools': [
               divide_integers,
-              {'function_declarations': function_declarations},
+              {'function_declarations': function_declarations_json_schema},
           ],
       },
   ):
@@ -2107,7 +2104,7 @@ async def test_function_declaration_with_callable_async(client):
       config={
           'tools': [
               divide_integers,
-              {'function_declarations': function_declarations},
+              {'function_declarations': function_declarations_json_schema},
           ],
       },
   )

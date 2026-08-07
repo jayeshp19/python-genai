@@ -3056,7 +3056,9 @@ are recommended to pass/receive Json Schema directly to/from the API. For exampl
       cls,
       *,
       json_schema: 'JSONSchema',
-      api_option: Literal['VERTEX_AI', 'GEMINI_API'] = 'GEMINI_API',
+      api_option: Literal['ENTERPRISE', 'GEMINI_API', 'VERTEX_AI'] = (
+          'GEMINI_API'
+      ),
       raise_error_on_unsupported_field: bool = False,
   ) -> 'Schema':
     """Converts a JSONSchema object to a Schema object.
@@ -3217,7 +3219,7 @@ are recommended to pass/receive Json Schema directly to/from the API. For exampl
 
     def raise_error_if_cannot_convert(
         json_schema_dict: dict[str, Any],
-        api_option: Literal['VERTEX_AI', 'GEMINI_API'],
+        api_option: Literal['ENTERPRISE', 'GEMINI_API', 'VERTEX_AI'],
         raise_error_on_unsupported_field: bool,
     ) -> None:
       """Raises an error if the JSONSchema cannot be converted to the specified Schema object."""
@@ -3262,7 +3264,7 @@ are recommended to pass/receive Json Schema directly to/from the API. For exampl
     def convert_json_schema(
         current_json_schema: 'JSONSchema',
         root_json_schema_dict: dict[str, Any],
-        api_option: Literal['VERTEX_AI', 'GEMINI_API'],
+        api_option: Literal['ENTERPRISE', 'GEMINI_API', 'VERTEX_AI'],
         raise_error_on_unsupported_field: bool,
         visited_refs: Optional[set[str]] = None,
     ) -> 'Schema':
@@ -4770,22 +4772,32 @@ class FunctionDeclaration(_common.BaseModel):
       cls,
       *,
       callable: Callable[..., Any],
-      api_option: Literal['VERTEX_AI', 'GEMINI_API'] = 'GEMINI_API',
+      api_option: Literal[
+          'ENTERPRISE', 'GEMINI_API', 'VERTEX_AI'
+      ] = 'GEMINI_API',
       behavior: Optional[Behavior] = None,
+      use_json_schema: bool = False,
   ) -> 'FunctionDeclaration':
     """Converts a Callable to a FunctionDeclaration based on the API option.
 
-    Supported API option is 'VERTEX_AI' or 'GEMINI_API'. If api_option is unset,
-    it will default to 'GEMINI_API'. If unsupported api_option is provided, it
-    will raise ValueError.
+    Supported API option is 'ENTERPRISE', 'GEMINI_API' or 'VERTEX_AI'. If
+    api_option is unset, it will default to 'GEMINI_API'. If unsupported
+    api_option is provided, it will raise ValueError.
+    Note: 'VERTEX_AI' is to be deprecated, please use 'ENTERPRISE' instead.
     """
-    supported_api_options = ['VERTEX_AI', 'GEMINI_API']
+    supported_api_options = ['ENTERPRISE', 'GEMINI_API', 'VERTEX_AI']
     if api_option not in supported_api_options:
       raise ValueError(
           f'Unsupported api_option value: {api_option}. Supported api_option'
           f' value is one of: {supported_api_options}.'
       )
     from . import _automatic_function_calling_util
+
+    if use_json_schema:
+      return _automatic_function_calling_util.parse_function_declaration_json_schema(
+          callable=callable,
+          behavior=behavior,
+      )
 
     parameters_properties = {}
     parameters_json_schema = {}
@@ -4937,6 +4949,7 @@ class FunctionDeclaration(_common.BaseModel):
       client: 'BaseApiClient',
       callable: Callable[..., Any],
       behavior: Optional[Behavior] = None,
+      use_json_schema: bool = False,
   ) -> 'FunctionDeclaration':
     """Converts a Callable to a FunctionDeclaration based on the client.
 
@@ -4950,11 +4963,17 @@ class FunctionDeclaration(_common.BaseModel):
     """
     if client.vertexai:
       return cls.from_callable_with_api_option(
-          callable=callable, api_option='VERTEX_AI', behavior=behavior
+          callable=callable,
+          api_option='ENTERPRISE',
+          behavior=behavior,
+          use_json_schema=use_json_schema,
       )
     else:
       return cls.from_callable_with_api_option(
-          callable=callable, api_option='GEMINI_API', behavior=behavior
+          callable=callable,
+          api_option='GEMINI_API',
+          behavior=behavior,
+          use_json_schema=use_json_schema,
       )
 
 
