@@ -559,6 +559,11 @@ class BaseModel(pydantic.BaseModel):
       ser_json_bytes='base64',
       val_json_bytes='base64',
       ignored_types=(typing.TypeVar,),
+      # Build each model's validator and serializer on first use rather than
+      # at import. `types` defines several hundred models and any one caller
+      # touches a small fraction of them, so building them all up front is
+      # most of what importing this package costs.
+      defer_build=True,
   )
 
   @pydantic.model_validator(mode='before')
