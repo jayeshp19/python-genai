@@ -47,6 +47,7 @@ else:
 
 def mcp_to_gemini_tool(tool: McpTool) -> types.Tool:
   """Translates an MCP tool to a Google GenAI tool."""
+  input_schema = getattr(tool, "inputSchema", getattr(tool, "input_schema", {}))
   return types.Tool(
       function_declarations=[{
           "name": tool.name,
@@ -66,6 +67,7 @@ def mcp_to_gemini_tool(tool: McpTool) -> types.Tool:
 
 def agent_platform_to_gemini_tool(tool: McpTool) -> types.Tool:
   """Translates an Agent Platform tool to a Google GenAI tool."""
+  input_schema = getattr(tool, "inputSchema", getattr(tool, "input_schema", {}))
   return types.Tool(
       function_declarations=[{
           "name": tool.name,

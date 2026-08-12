@@ -2011,7 +2011,10 @@ class FunctionResponse(_common.BaseModel):
           ' imported.'
       )
 
-    if getattr(response, 'is_error', getattr(response, 'isError', False)):
+    is_error = getattr(
+        response, 'isError', getattr(response, 'is_error', False)
+    )
+    if is_error:
       return cls(name=name, response={'error': 'MCP response is error.'})
     else:
       return cls(name=name, response={'result': response.content})
