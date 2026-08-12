@@ -18,7 +18,6 @@
 from typing import Any, Callable, Optional, TYPE_CHECKING, Union
 import httpx
 import json
-import requests
 
 try:
   import httpx2
@@ -32,6 +31,7 @@ if TYPE_CHECKING:
   from .replay_api_client import ReplayResponse
   import aiohttp
   from google.auth.aio.transport.aiohttp import Response as AsyncAuthorizedSessionResponse
+  import requests  # pylint: disable=g-import-not-at-top
 
 
 # httpx2 (https://github.com/pydantic/httpx2) is a drop-in fork of httpx under a
@@ -47,7 +47,7 @@ class APIError(Exception):
   """General errors raised by the GenAI API."""
   code: int
   response: Union[
-      requests.Response,
+      'requests.Response',
       'ReplayResponse',
       httpx.Response,
       'AsyncAuthorizedSessionResponse',
@@ -62,7 +62,7 @@ class APIError(Exception):
       response_json: Any,
       response: Optional[
           Union[
-              requests.Response,
+              'requests.Response',
               'ReplayResponse',
               httpx.Response,
               'AsyncAuthorizedSessionResponse',
@@ -138,7 +138,8 @@ class APIError(Exception):
 
   @classmethod
   def raise_for_response(
-      cls, response: Union['ReplayResponse', httpx.Response, requests.Response]
+      cls,
+      response: Union['ReplayResponse', httpx.Response, 'requests.Response'],
   ) -> None:
     """Raises an error with detailed error message if the response has an error status."""
     if response.status_code == 200:
@@ -154,7 +155,9 @@ class APIError(Exception):
             'message': message,
             'status': response.reason_phrase,
         }
-    elif isinstance(response, requests.Response):
+    elif (requests := _common.loaded_requests()) is not None and isinstance(
+        response, requests.Response
+    ):
       try:
         # do not do any extra muanipulation on the response.
         # return the raw response json as is.
@@ -178,7 +181,7 @@ class APIError(Exception):
           Union[
               'ReplayResponse',
               httpx.Response,
-              requests.Response,
+              'requests.Response',
           ]
       ],
   ) -> None:

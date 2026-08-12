@@ -45,13 +45,10 @@ import google.auth
 import google.auth.credentials
 from google.auth.credentials import Credentials
 from google.auth.transport import mtls
-from google.auth.transport.requests import AuthorizedSession
 from google.auth import exceptions as auth_exceptions
 import httpx
 from pydantic import BaseModel
 from pydantic import ValidationError
-import requests
-from requests.structures import CaseInsensitiveDict
 import tenacity
 
 from . import _common
@@ -87,7 +84,9 @@ except ImportError:
 
 
 if TYPE_CHECKING:
+  from google.auth.transport.requests import AuthorizedSession  # pylint: disable=g-import-not-at-top
   from multidict import CIMultiDictProxy
+  from requests.structures import CaseInsensitiveDict  # pylint: disable=g-import-not-at-top
 
 
 logger = logging.getLogger('google_genai._api_client')
@@ -276,7 +275,7 @@ class HttpResponse:
           dict[str, str],
           httpx.Headers,
           'CIMultiDictProxy[str]',
-          CaseInsensitiveDict,
+          'CaseInsensitiveDict',
       ],
       response_stream: Union[Any, str] = None,
       byte_stream: Union[Any, bytes] = None,
@@ -287,7 +286,11 @@ class HttpResponse:
       self.headers = {
           key: ', '.join(headers.get_list(key)) for key in headers.keys()  # type: ignore[attr-defined]
       }
-    elif isinstance(headers, CaseInsensitiveDict):
+    elif (
+        requests_module := _common.loaded_requests()
+    ) is not None and isinstance(
+        headers, requests_module.structures.CaseInsensitiveDict
+    ):
       self.headers = {key: value for key, value in headers.items()}
     elif type(headers).__name__ == 'CIMultiDictProxy':
       self.headers = {
@@ -365,9 +368,13 @@ class HttpResponse:
 
   def _iter_response_stream(self) -> Iterator[str]:
     """Iterates over chunks retrieved from the API."""
+    requests_module = _common.loaded_requests()
     if not (
         isinstance(self.response_stream, _HTTPX_RESPONSE_TYPES)
-        or isinstance(self.response_stream, requests.Response)
+        or (
+            requests_module is not None
+            and isinstance(self.response_stream, requests_module.Response)
+        )
     ):
       raise TypeError(
           'Expected self.response_stream to be an httpx.Response object, '
@@ -848,7 +855,7 @@ class BaseApiClient:
         vertexai=bool(self.vertexai),
     )
     self._async_httpx_client_args = async_client_args
-    self._authorized_session: Optional[AuthorizedSession] = None
+    self._authorized_session: Optional['AuthorizedSession'] = None
 
     if self._use_google_auth_sync():
       self._httpx_client = None
@@ -1467,6 +1474,8 @@ class BaseApiClient:
     if self._use_google_auth_sync():
       url = str(http_request.url)
       if self._authorized_session is None:
+        from google.auth.transport.requests import AuthorizedSession  # pylint: disable=g-import-not-at-top
+
         self._authorized_session = AuthorizedSession(  # type: ignore[no-untyped-call]
             self._credentials,
             max_refresh_attempts=1,
