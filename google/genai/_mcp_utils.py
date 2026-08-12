@@ -27,9 +27,6 @@ from importlib.metadata import PackageNotFoundError, version
 import typing
 from typing import Any
 
-import google.auth
-from google.auth.transport.requests import Request
-
 from . import _common
 from . import types
 from ._api_client import _MULTI_REGIONAL_LOCATIONS
