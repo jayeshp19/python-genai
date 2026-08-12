@@ -16,6 +16,11 @@
 """Utils for working with MCP tools."""
 import contextlib
 import httpx
+
+try:
+  import httpx2
+except ImportError:
+  httpx2 = None  # type: ignore[assignment]
 import sys
 
 from importlib.metadata import PackageNotFoundError, version
@@ -51,7 +56,11 @@ def mcp_to_gemini_tool(tool: McpTool) -> types.Tool:
           "description": tool.description,
           "parameters": types.Schema.from_json_schema(
               json_schema=types.JSONSchema(
-                  **_filter_to_supported_schema(tool.inputSchema)
+                  **_filter_to_supported_schema(
+                      getattr(
+                          tool, "input_schema", getattr(tool, "inputSchema", {})
+                      )
+                  )
               )
           ),
       }]
@@ -61,13 +70,13 @@ def mcp_to_gemini_tool(tool: McpTool) -> types.Tool:
 def agent_platform_to_gemini_tool(tool: McpTool) -> types.Tool:
   """Translates an Agent Platform tool to a Google GenAI tool."""
   return types.Tool(
-      function_declarations=[
-          {
-              "name": tool.name,
-              "description": tool.description,
-              "parameters_json_schema": tool.inputSchema,
-          }
-      ]
+      function_declarations=[{
+          "name": tool.name,
+          "description": tool.description,
+          "parameters_json_schema": getattr(
+              tool, "input_schema", getattr(tool, "inputSchema", {})
+          ),
+      }]
   )
 
 
@@ -201,14 +210,19 @@ async def _connect_agent_platform_mcp(api_client: Any, toolset_name: str) -> typ
 
   set_mcp_usage_header(headers)
 
-  http_client = httpx.AsyncClient(headers=headers, timeout=None)
+  http_client: Any
+  if httpx2 is not None:
+    http_client = httpx2.AsyncClient(headers=headers, timeout=None)
+  else:
+    http_client = httpx.AsyncClient(headers=headers, timeout=None)
 
   try:
     async with http_client:
       async with streamable_http_client(
           url=mcp_url, http_client=http_client
       ) as streams:
-        read_stream, write_stream, _ = streams
+        read_stream = streams[0]
+        write_stream = streams[1]
         async with McpClientSession(read_stream, write_stream) as session:
           await session.initialize()
           try:

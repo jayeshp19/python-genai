@@ -19,6 +19,12 @@ from typing import Any, Callable, Optional, TYPE_CHECKING, Union
 import httpx
 import json
 import requests
+
+try:
+  import httpx2
+except ImportError:
+  httpx2 = None  # type: ignore[assignment]
+
 from . import _common
 
 
@@ -26,6 +32,15 @@ if TYPE_CHECKING:
   from .replay_api_client import ReplayResponse
   import aiohttp
   from google.auth.aio.transport.aiohttp import Response as AsyncAuthorizedSessionResponse
+
+
+# httpx2 (https://github.com/pydantic/httpx2) is a drop-in fork of httpx under a
+# separate import namespace, so its Response is not an instance of
+# httpx.Response. Widen the runtime type checks to accept either when httpx2 is
+# installed.
+_HTTPX_RESPONSE_TYPES = (
+    (httpx.Response,) if httpx2 is None else (httpx.Response, httpx2.Response)
+)
 
 
 class APIError(Exception):
@@ -129,7 +144,7 @@ class APIError(Exception):
     if response.status_code == 200:
       return
 
-    if isinstance(response, httpx.Response):
+    if isinstance(response, _HTTPX_RESPONSE_TYPES):
       try:
         response.read()
         response_json = response.json()
@@ -198,7 +213,7 @@ class APIError(Exception):
       ],
   ) -> None:
     """Raises an error with detailed error message if the response has an error status."""
-    if isinstance(response, httpx.Response):
+    if isinstance(response, _HTTPX_RESPONSE_TYPES):
       if response.status_code == 200:
         return
       try:

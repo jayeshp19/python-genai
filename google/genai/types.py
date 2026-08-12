@@ -109,9 +109,10 @@ if typing.TYPE_CHECKING:
 _is_httpx_imported = False
 if typing.TYPE_CHECKING:
   import httpx
+  import httpx2
 
-  HttpxClient = httpx.Client
-  HttpxAsyncClient = httpx.AsyncClient
+  HttpxClient = Union[httpx.Client, httpx2.Client]
+  HttpxAsyncClient = Union[httpx.AsyncClient, httpx2.AsyncClient]
   _is_httpx_imported = True
 else:
   HttpxClient: typing.Type = Any
@@ -126,6 +127,19 @@ else:
   except ImportError:
     HttpxClient = None
     HttpxAsyncClient = None
+
+  try:
+    import httpx2
+
+    if _is_httpx_imported:
+      HttpxClient = Union[httpx.Client, httpx2.Client]
+      HttpxAsyncClient = Union[httpx.AsyncClient, httpx2.AsyncClient]
+    else:
+      HttpxClient = httpx2.Client
+      HttpxAsyncClient = httpx2.AsyncClient
+      _is_httpx_imported = True
+  except ImportError:
+    pass
 
 _is_aiohttp_imported = False
 if typing.TYPE_CHECKING:
@@ -1997,7 +2011,7 @@ class FunctionResponse(_common.BaseModel):
           ' imported.'
       )
 
-    if response.isError:
+    if getattr(response, 'is_error', getattr(response, 'isError', False)):
       return cls(name=name, response={'error': 'MCP response is error.'})
     else:
       return cls(name=name, response={'result': response.content})

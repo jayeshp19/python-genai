@@ -389,7 +389,11 @@ async def get_function_response_parts_async(
             mcp_tool_response = await func.call_tool(
                 types.FunctionCall(name=func_name, args=args)
             )
-            if mcp_tool_response.isError:
+            if getattr(
+                mcp_tool_response,
+                'is_error',
+                getattr(mcp_tool_response, 'isError', False),
+            ):
               func_response = {'error': mcp_tool_response}
             else:
               func_response = {'result': mcp_tool_response}
