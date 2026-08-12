@@ -162,6 +162,8 @@ if TYPE_CHECKING:
     from .generationconfig import (
         GenerationConfig,
         GenerationConfigParam,
+        SpeechConfigUnion,
+        SpeechConfigUnionParam,
         ToolChoice,
         ToolChoiceParam,
     )
@@ -325,6 +327,7 @@ if TYPE_CHECKING:
     from .servicetier import ServiceTier
     from .sessionconfig import SessionConfig, SessionConfigParam
     from .source import Source, SourceParam, SourceType
+    from .speakerconfig import SpeakerConfig, SpeakerConfigParam
     from .speechconfig import SpeechConfig, SpeechConfigParam
     from .staticmediaprocessing import StaticMediaProcessing, StaticMediaProcessingParam
     from .status import Status, StatusParam
@@ -676,8 +679,12 @@ __all__ = [
     "Source",
     "SourceParam",
     "SourceType",
+    "SpeakerConfig",
+    "SpeakerConfigParam",
     "SpeechConfig",
     "SpeechConfigParam",
+    "SpeechConfigUnion",
+    "SpeechConfigUnionParam",
     "StaticMediaProcessing",
     "StaticMediaProcessingParam",
     "Status",
@@ -915,6 +922,8 @@ _dynamic_imports: dict[str, str] = {
     "UnknownFunctionResultSubcontent": ".functionresultsubcontent",
     "GenerationConfig": ".generationconfig",
     "GenerationConfigParam": ".generationconfig",
+    "SpeechConfigUnion": ".generationconfig",
+    "SpeechConfigUnionParam": ".generationconfig",
     "ToolChoice": ".generationconfig",
     "ToolChoiceParam": ".generationconfig",
     "GoogleMaps": ".googlemaps",
@@ -1061,6 +1070,8 @@ _dynamic_imports: dict[str, str] = {
     "Source": ".source",
     "SourceParam": ".source",
     "SourceType": ".source",
+    "SpeakerConfig": ".speakerconfig",
+    "SpeakerConfigParam": ".speakerconfig",
     "SpeechConfig": ".speechconfig",
     "SpeechConfigParam": ".speechconfig",
     "StaticMediaProcessing": ".staticmediaprocessing",
