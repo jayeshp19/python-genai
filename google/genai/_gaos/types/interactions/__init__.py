@@ -290,6 +290,7 @@ if TYPE_CHECKING:
         MCPServerToolResultStepResultUnion,
         MCPServerToolResultStepResultUnionParam,
     )
+    from .mediaprocessing import MediaProcessing, MediaProcessingParam
     from .mediaresolution import MediaResolution
     from .modalitytokens import ModalityTokens, ModalityTokensTypedDict
     from .model import Model
@@ -325,6 +326,7 @@ if TYPE_CHECKING:
     from .sessionconfig import SessionConfig, SessionConfigParam
     from .source import Source, SourceParam, SourceType
     from .speechconfig import SpeechConfig, SpeechConfigParam
+    from .staticmediaprocessing import StaticMediaProcessing, StaticMediaProcessingParam
     from .status import Status, StatusParam
     from .step import Step, StepParam, UnknownStep
     from .stepdelta import StepDelta, StepDeltaTypedDict
@@ -384,7 +386,14 @@ if TYPE_CHECKING:
     from .userinputstep import UserInputStep, UserInputStepParam
     from .vertexaisearchconfig import VertexAISearchConfig, VertexAISearchConfigParam
     from .videoconfig import Task, VideoConfig, VideoConfigParam
-    from .videocontent import VideoContent, VideoContentMimeType, VideoContentParam
+    from .videocontent import (
+        Processing,
+        ProcessingEnum,
+        ProcessingParam,
+        VideoContent,
+        VideoContentMimeType,
+        VideoContentParam,
+    )
     from .videodelta import VideoDelta, VideoDeltaMimeType, VideoDeltaTypedDict
     from .videoresponseformat import (
         VideoResponseFormat,
@@ -616,6 +625,8 @@ __all__ = [
     "MCPServerToolResultStepResultParam",
     "MCPServerToolResultStepResultUnion",
     "MCPServerToolResultStepResultUnionParam",
+    "MediaProcessing",
+    "MediaProcessingParam",
     "MediaResolution",
     "Method",
     "ModalityTokens",
@@ -631,6 +642,9 @@ __all__ = [
     "ParallelAISearchConfigParam",
     "PlaceCitation",
     "PlaceCitationParam",
+    "Processing",
+    "ProcessingEnum",
+    "ProcessingParam",
     "RagResource",
     "RagResourceParam",
     "RagRetrievalConfig",
@@ -664,6 +678,8 @@ __all__ = [
     "SourceType",
     "SpeechConfig",
     "SpeechConfigParam",
+    "StaticMediaProcessing",
+    "StaticMediaProcessingParam",
     "Status",
     "StatusParam",
     "Step",
@@ -1000,6 +1016,8 @@ _dynamic_imports: dict[str, str] = {
     "MCPServerToolResultStepResultParam": ".mcpservertoolresultstep",
     "MCPServerToolResultStepResultUnion": ".mcpservertoolresultstep",
     "MCPServerToolResultStepResultUnionParam": ".mcpservertoolresultstep",
+    "MediaProcessing": ".mediaprocessing",
+    "MediaProcessingParam": ".mediaprocessing",
     "MediaResolution": ".mediaresolution",
     "ModalityTokens": ".modalitytokens",
     "ModalityTokensTypedDict": ".modalitytokens",
@@ -1045,6 +1063,8 @@ _dynamic_imports: dict[str, str] = {
     "SourceType": ".source",
     "SpeechConfig": ".speechconfig",
     "SpeechConfigParam": ".speechconfig",
+    "StaticMediaProcessing": ".staticmediaprocessing",
+    "StaticMediaProcessingParam": ".staticmediaprocessing",
     "Status": ".status",
     "StatusParam": ".status",
     "Step": ".step",
@@ -1119,6 +1139,9 @@ _dynamic_imports: dict[str, str] = {
     "Task": ".videoconfig",
     "VideoConfig": ".videoconfig",
     "VideoConfigParam": ".videoconfig",
+    "Processing": ".videocontent",
+    "ProcessingEnum": ".videocontent",
+    "ProcessingParam": ".videocontent",
     "VideoContent": ".videocontent",
     "VideoContentMimeType": ".videocontent",
     "VideoContentParam": ".videocontent",
