@@ -1333,6 +1333,8 @@ class InteractionStatus(_common.CaseInSensitiveEnum):
   IN_PROGRESS = 'IN_PROGRESS'
   """The server is still actively processing user input or running background reasoning. More model output may follow."""
   REQUIRES_ACTION = 'REQUIRES_ACTION'
+  """Deprecated: Use IDLE instead."""
+  IDLE = 'IDLE'
   """The server has completed all processing and background reasoning."""
 
 
