@@ -1360,17 +1360,6 @@ class VoiceActivityType(_common.CaseInSensitiveEnum):
   """End of sentence signal."""
 
 
-class AudioTranscriptionConfigMode(_common.CaseInSensitiveEnum):
-  """Transcription mode."""
-
-  MODE_UNSPECIFIED = 'MODE_UNSPECIFIED'
-  """Unspecified transcription mode."""
-  VERBATIM = 'VERBATIM'
-  """Verbatim transcription mode."""
-  SMART = 'SMART'
-  """Smart transcription mode."""
-
-
 class StartSensitivity(_common.CaseInSensitiveEnum):
   """Start of speech sensitivity."""
 
@@ -6382,17 +6371,6 @@ class AudioTranscriptionConfig(_common.BaseModel):
       description="""Configures speaker diarization.
       """,
   )
-  mode: Optional[AudioTranscriptionConfigMode] = Field(
-      default=None,
-      description="""Optional. Transcription mode.
-
-      When set to `SMART`, the model performs disfluency removal (eliminating
-      filler words, repetitions, and false starts), light grammatical cleanup,
-      automatic formatting (paragraphs, bullet points, numbered lists), and
-      minor user edits (inline self-corrections). Incompatible with
-      `word_timestamp` and `diarization`.
-      """,
-  )
 
 
 class AudioTranscriptionConfigDict(TypedDict, total=False):
@@ -6419,16 +6397,6 @@ class AudioTranscriptionConfigDict(TypedDict, total=False):
 
   diarization: Optional[bool]
   """Configures speaker diarization.
-      """
-
-  mode: Optional[AudioTranscriptionConfigMode]
-  """Optional. Transcription mode.
-
-      When set to `SMART`, the model performs disfluency removal (eliminating
-      filler words, repetitions, and false starts), light grammatical cleanup,
-      automatic formatting (paragraphs, bullet points, numbered lists), and
-      minor user edits (inline self-corrections). Incompatible with
-      `word_timestamp` and `diarization`.
       """
 
 
