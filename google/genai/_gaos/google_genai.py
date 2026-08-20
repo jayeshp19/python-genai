@@ -1003,7 +1003,15 @@ def _normalize_create_body(body: dict[str, Any]) -> dict[str, Any]:
     if not _is_content_list(input_value):
         return body
 
-    return {**body, 'input': [{'type': 'user_input', 'content': input_value}]}
+    normalized_content = [_normalize_content_block(item) for item in input_value]
+    return {**body, 'input': [{'type': 'user_input', 'content': normalized_content}]}
+
+
+def _normalize_content_block(value: dict[str, Any]) -> dict[str, Any]:
+    if 'text' in value and 'type' not in value:
+        return {**value, 'type': 'text'}
+    return value
+
 
 
 def _is_content_list(value: Any) -> bool:
