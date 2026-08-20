@@ -38,6 +38,7 @@ VideoDeltaMimeType = Union[
         "video/webm",
         "video/wmv",
         "video/3gpp",
+        "video/jpeg2000",
     ],
     UnrecognizedStr,
 ]
