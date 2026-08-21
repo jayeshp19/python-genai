@@ -134,7 +134,7 @@ if TYPE_CHECKING:
     )
     from .filesearchresultstep import FileSearchResultStep, FileSearchResultStepParam
     from .filter_ import Filter, FilterParam
-    from .findrequest import FindRequest, FindRequestParam, Mode
+    from .findrequest import FindRequest, FindRequestMode, FindRequestParam
     from .fixrequest import FixRequest, FixRequestParam
     from .function import Function, FunctionParam
     from .functioncallstep import FunctionCallStep, FunctionCallStepParam
@@ -326,6 +326,10 @@ if TYPE_CHECKING:
     from .safetysetting import Method, SafetySetting, SafetySettingParam, Threshold
     from .servicetier import ServiceTier
     from .sessionconfig import SessionConfig, SessionConfigParam
+    from .smarttranscriptionmode import (
+        SmartTranscriptionMode,
+        SmartTranscriptionModeParam,
+    )
     from .source import Source, SourceParam, SourceType
     from .speakerconfig import SpeakerConfig, SpeakerConfigParam
     from .speechconfig import SpeechConfig, SpeechConfigParam
@@ -365,7 +369,18 @@ if TYPE_CHECKING:
     from .tool import Tool, ToolParam, UnknownTool
     from .toolchoiceconfig import ToolChoiceConfig, ToolChoiceConfigParam
     from .toolchoicetype import ToolChoiceType
-    from .transcriptionconfig import TranscriptionConfig, TranscriptionConfigParam
+    from .transcriptionconfig import (
+        Mode,
+        ModeParam,
+        TranscriptionConfig,
+        TranscriptionConfigModeEnum,
+        TranscriptionConfigParam,
+    )
+    from .transcriptionmode import (
+        TranscriptionMode,
+        TranscriptionModeParam,
+        UnknownTranscriptionMode,
+    )
     from .urlcitation import URLCitation, URLCitationParam
     from .urlcontext import URLContext, URLContextParam
     from .urlcontextcallarguments import (
@@ -386,6 +401,10 @@ if TYPE_CHECKING:
     from .urlcontextresultstep import URLContextResultStep, URLContextResultStepParam
     from .usage import Usage, UsageTypedDict
     from .userinputstep import UserInputStep, UserInputStepParam
+    from .verbatimtranscriptionmode import (
+        VerbatimTranscriptionMode,
+        VerbatimTranscriptionModeParam,
+    )
     from .vertexaisearchconfig import VertexAISearchConfig, VertexAISearchConfigParam
     from .videoconfig import Task, VideoConfig, VideoConfigParam
     from .videocontent import (
@@ -507,6 +526,7 @@ __all__ = [
     "Filter",
     "FilterParam",
     "FindRequest",
+    "FindRequestMode",
     "FindRequestParam",
     "FixRequest",
     "FixRequestParam",
@@ -635,6 +655,7 @@ __all__ = [
     "ModalityTokens",
     "ModalityTokensTypedDict",
     "Mode",
+    "ModeParam",
     "Model",
     "ModelOutputStep",
     "ModelOutputStepParam",
@@ -677,6 +698,8 @@ __all__ = [
     "ServiceTier",
     "SessionConfig",
     "SessionConfigParam",
+    "SmartTranscriptionMode",
+    "SmartTranscriptionModeParam",
     "Source",
     "SourceParam",
     "SourceType",
@@ -731,7 +754,10 @@ __all__ = [
     "ToolChoiceType",
     "ToolParam",
     "TranscriptionConfig",
+    "TranscriptionConfigModeEnum",
     "TranscriptionConfigParam",
+    "TranscriptionMode",
+    "TranscriptionModeParam",
     "Transform",
     "TransformParam",
     "URLCitation",
@@ -760,10 +786,13 @@ __all__ = [
     "UnknownStepDeltaData",
     "UnknownThoughtSummaryContent",
     "UnknownTool",
+    "UnknownTranscriptionMode",
     "Usage",
     "UsageTypedDict",
     "UserInputStep",
     "UserInputStepParam",
+    "VerbatimTranscriptionMode",
+    "VerbatimTranscriptionModeParam",
     "VertexAISearchConfig",
     "VertexAISearchConfigParam",
     "VideoConfig",
@@ -894,8 +923,8 @@ _dynamic_imports: dict[str, str] = {
     "Filter": ".filter_",
     "FilterParam": ".filter_",
     "FindRequest": ".findrequest",
+    "FindRequestMode": ".findrequest",
     "FindRequestParam": ".findrequest",
-    "Mode": ".findrequest",
     "FixRequest": ".fixrequest",
     "FixRequestParam": ".fixrequest",
     "Function": ".function",
@@ -1064,6 +1093,8 @@ _dynamic_imports: dict[str, str] = {
     "ServiceTier": ".servicetier",
     "SessionConfig": ".sessionconfig",
     "SessionConfigParam": ".sessionconfig",
+    "SmartTranscriptionMode": ".smarttranscriptionmode",
+    "SmartTranscriptionModeParam": ".smarttranscriptionmode",
     "Source": ".source",
     "SourceParam": ".source",
     "SourceType": ".source",
@@ -1115,8 +1146,14 @@ _dynamic_imports: dict[str, str] = {
     "ToolChoiceConfig": ".toolchoiceconfig",
     "ToolChoiceConfigParam": ".toolchoiceconfig",
     "ToolChoiceType": ".toolchoicetype",
+    "Mode": ".transcriptionconfig",
+    "ModeParam": ".transcriptionconfig",
     "TranscriptionConfig": ".transcriptionconfig",
+    "TranscriptionConfigModeEnum": ".transcriptionconfig",
     "TranscriptionConfigParam": ".transcriptionconfig",
+    "TranscriptionMode": ".transcriptionmode",
+    "TranscriptionModeParam": ".transcriptionmode",
+    "UnknownTranscriptionMode": ".transcriptionmode",
     "URLCitation": ".urlcitation",
     "URLCitationParam": ".urlcitation",
     "URLContext": ".urlcontext",
@@ -1138,6 +1175,8 @@ _dynamic_imports: dict[str, str] = {
     "UsageTypedDict": ".usage",
     "UserInputStep": ".userinputstep",
     "UserInputStepParam": ".userinputstep",
+    "VerbatimTranscriptionMode": ".verbatimtranscriptionmode",
+    "VerbatimTranscriptionModeParam": ".verbatimtranscriptionmode",
     "VertexAISearchConfig": ".vertexaisearchconfig",
     "VertexAISearchConfigParam": ".vertexaisearchconfig",
     "Task": ".videoconfig",
