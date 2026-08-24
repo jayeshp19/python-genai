@@ -34,13 +34,16 @@ TranscriptionConfigModeEnum = Union[
 ]
 
 
-ModeParam = TypeAliasType(
-    "ModeParam", Union[TranscriptionModeParam, TranscriptionConfigModeEnum]
+TranscriptionConfigModeParam = TypeAliasType(
+    "TranscriptionConfigModeParam",
+    Union[TranscriptionModeParam, TranscriptionConfigModeEnum],
 )
 r"""Discriminated transcription mode options or enum."""
 
 
-Mode = TypeAliasType("Mode", Union[TranscriptionMode, TranscriptionConfigModeEnum])
+TranscriptionConfigMode = TypeAliasType(
+    "TranscriptionConfigMode", Union[TranscriptionMode, TranscriptionConfigModeEnum]
+)
 r"""Discriminated transcription mode options or enum."""
 
 
@@ -59,7 +62,7 @@ class TranscriptionConfigParam(TypedDict):
     r"""Optional. BCP-47 language codes providing hints about the languages present in the
     audio. If omitted or empty, defaults to automatic language detection.
     """
-    mode: NotRequired[ModeParam]
+    mode: NotRequired[TranscriptionConfigModeParam]
     r"""Discriminated transcription mode options or enum."""
     timestamp_granularities: NotRequired[List[str]]
     r"""Optional. The granularity of timestamps to include in the transcription output.
@@ -96,7 +99,7 @@ class TranscriptionConfig(BaseModel):
     audio. If omitted or empty, defaults to automatic language detection.
     """
 
-    mode: Optional[Mode] = None
+    mode: Optional[TranscriptionConfigMode] = None
     r"""Discriminated transcription mode options or enum."""
 
     timestamp_granularities: Annotated[

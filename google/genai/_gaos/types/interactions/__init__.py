@@ -134,7 +134,7 @@ if TYPE_CHECKING:
     )
     from .filesearchresultstep import FileSearchResultStep, FileSearchResultStepParam
     from .filter_ import Filter, FilterParam
-    from .findrequest import FindRequest, FindRequestMode, FindRequestParam
+    from .findrequest import FindRequest, FindRequestParam, Mode
     from .fixrequest import FixRequest, FixRequestParam
     from .function import Function, FunctionParam
     from .functioncallstep import FunctionCallStep, FunctionCallStepParam
@@ -370,10 +370,10 @@ if TYPE_CHECKING:
     from .toolchoiceconfig import ToolChoiceConfig, ToolChoiceConfigParam
     from .toolchoicetype import ToolChoiceType
     from .transcriptionconfig import (
-        Mode,
-        ModeParam,
         TranscriptionConfig,
+        TranscriptionConfigMode,
         TranscriptionConfigModeEnum,
+        TranscriptionConfigModeParam,
         TranscriptionConfigParam,
     )
     from .transcriptionmode import (
@@ -526,7 +526,6 @@ __all__ = [
     "Filter",
     "FilterParam",
     "FindRequest",
-    "FindRequestMode",
     "FindRequestParam",
     "FixRequest",
     "FixRequestParam",
@@ -655,7 +654,6 @@ __all__ = [
     "ModalityTokens",
     "ModalityTokensTypedDict",
     "Mode",
-    "ModeParam",
     "Model",
     "ModelOutputStep",
     "ModelOutputStepParam",
@@ -754,7 +752,9 @@ __all__ = [
     "ToolChoiceType",
     "ToolParam",
     "TranscriptionConfig",
+    "TranscriptionConfigMode",
     "TranscriptionConfigModeEnum",
+    "TranscriptionConfigModeParam",
     "TranscriptionConfigParam",
     "TranscriptionMode",
     "TranscriptionModeParam",
@@ -923,8 +923,8 @@ _dynamic_imports: dict[str, str] = {
     "Filter": ".filter_",
     "FilterParam": ".filter_",
     "FindRequest": ".findrequest",
-    "FindRequestMode": ".findrequest",
     "FindRequestParam": ".findrequest",
+    "Mode": ".findrequest",
     "FixRequest": ".fixrequest",
     "FixRequestParam": ".fixrequest",
     "Function": ".function",
@@ -1146,10 +1146,10 @@ _dynamic_imports: dict[str, str] = {
     "ToolChoiceConfig": ".toolchoiceconfig",
     "ToolChoiceConfigParam": ".toolchoiceconfig",
     "ToolChoiceType": ".toolchoicetype",
-    "Mode": ".transcriptionconfig",
-    "ModeParam": ".transcriptionconfig",
     "TranscriptionConfig": ".transcriptionconfig",
+    "TranscriptionConfigMode": ".transcriptionconfig",
     "TranscriptionConfigModeEnum": ".transcriptionconfig",
+    "TranscriptionConfigModeParam": ".transcriptionconfig",
     "TranscriptionConfigParam": ".transcriptionconfig",
     "TranscriptionMode": ".transcriptionmode",
     "TranscriptionModeParam": ".transcriptionmode",
