@@ -652,8 +652,6 @@ class Files(_api_module.BaseModule):
         kwargs=config_model.model_dump() if config else {},
     )
 
-  # from typing import overload
-
   @overload
   def download(
       self,
@@ -1309,8 +1307,6 @@ class AsyncFiles(_api_module.BaseModule):
         response=return_file.json['file'],
         kwargs=config_model.model_dump() if config else {},
     )
-
-  # from typing import overload
 
   @overload
   async def download(
