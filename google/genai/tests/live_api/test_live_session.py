@@ -44,11 +44,17 @@ pytestmark = pytest.mark.skipif(
 
 pytest_plugins = ('pytest_asyncio',)
 
-# The only live model family currently served. It is audio-native and rejects a
-# TEXT response modality outright ("The requested combination of response
-# modalities (TEXT) is not supported by the model"), so these tests request
-# AUDIO and turn on output transcription to get an assertable text signal.
-LIVE_MODEL = 'gemini-3.1-flash-live-preview'
+# Live models are backend-specific: gemini-3.1-flash-live-preview is served only
+# on the Gemini API, and gemini-live-2.5-flash-native-audio only on Vertex, and
+# there only regionally -- see the location_override fixture in this package's
+# conftest. Both are audio-native and reject a TEXT response modality outright
+# ("The requested combination of response modalities (TEXT) is not supported by
+# the model"), so these tests request AUDIO and turn on output transcription to
+# get an assertable text signal.
+LIVE_MODELS = {
+    False: 'gemini-3.1-flash-live-preview',
+    True: 'gemini-live-2.5-flash-native-audio',
+}
 
 # A live turn is an open-ended stream with no built-in deadline. Without this
 # bound a wedged receive would hang the nightly rather than fail it.
@@ -121,12 +127,13 @@ async def _say(session, text: str) -> None:
   )
 
 
+@pytest.mark.parametrize('use_vertex', [False, True])
 @pytest.mark.asyncio
-async def test_text_input(client):
+async def test_text_input(client, use_vertex):
   """A single text turn produces audio output and a matching transcription."""
   try:
     async with client.aio.live.connect(
-        model=LIVE_MODEL, config=_base_config()
+        model=LIVE_MODELS[use_vertex], config=_base_config()
     ) as session:
       await _say(session, 'Say hello.')
       turn = await _receive_turn(session)
@@ -138,12 +145,13 @@ async def test_text_input(client):
     raise
 
 
+@pytest.mark.parametrize('use_vertex', [False, True])
 @pytest.mark.asyncio
-async def test_multi_turn(client):
+async def test_multi_turn(client, use_vertex):
   """A second turn in the same session can see the first turn's context."""
   try:
     async with client.aio.live.connect(
-        model=LIVE_MODEL, config=_base_config()
+        model=LIVE_MODELS[use_vertex], config=_base_config()
     ) as session:
       await _say(session, 'Remember the number 42. Just acknowledge it.')
       first = await _receive_turn(session)
@@ -162,8 +170,9 @@ async def test_multi_turn(client):
     raise
 
 
+@pytest.mark.parametrize('use_vertex', [False, True])
 @pytest.mark.asyncio
-async def test_function_calling(client):
+async def test_function_calling(client, use_vertex):
   """The model requests a declared tool, and the session accepts its result."""
   turn_on_the_lights = types.FunctionDeclaration(
       name='turn_on_the_lights',
@@ -176,7 +185,7 @@ async def test_function_calling(client):
 
   try:
     async with client.aio.live.connect(
-        model=LIVE_MODEL, config=config
+        model=LIVE_MODELS[use_vertex], config=config
     ) as session:
       await _say(session, 'Please turn on the lights.')
       turn = await _receive_turn(session)
@@ -194,20 +203,31 @@ async def test_function_calling(client):
           ]
       )
       follow_up = await _receive_turn(session)
-      assert follow_up.transcript.strip(), (
-          'expected the model to respond after the tool result'
-      )
+      if not use_vertex:
+        # Vertex accepts the tool result and completes the turn, but emits an
+        # empty transcription and no audio for it, so only the Gemini API can be
+        # asserted on content here. Confirmed at the raw protocol level: the
+        # follow-up carries outputTranscription with empty text, then
+        # generationComplete and turnComplete.
+        assert follow_up.transcript.strip(), (
+            'expected the model to respond after the tool result'
+        )
   except Exception as e:  # pylint: disable=broad-except
     _skip_if_quota_exhausted(e)
     raise
 
 
+@pytest.mark.parametrize('use_vertex', [False])
 @pytest.mark.asyncio
-async def test_send_tool_response_without_id_raises(client):
-  """The Gemini API backend requires an id on every FunctionResponse."""
+async def test_send_tool_response_without_id_raises(client, use_vertex):
+  """The Gemini API backend requires an id on every FunctionResponse.
+
+  Gemini API only: live.py:409 puts this validation in the non-vertexai branch
+  of send_tool_response, so Vertex accepts an id-less FunctionResponse.
+  """
   try:
     async with client.aio.live.connect(
-        model=LIVE_MODEL, config=_base_config()
+        model=LIVE_MODELS[use_vertex], config=_base_config()
     ) as session:
       with pytest.raises(ValueError, match='must have an `id` field'):
         await session.send_tool_response(
