@@ -51,8 +51,6 @@ FunctionResultDeltaResultUnion = TypeAliasType(
 
 
 class FunctionResultDeltaTypedDict(TypedDict):
-    call_id: str
-    r"""Required. ID to match the ID from the function call block."""
     result: FunctionResultDeltaResultUnionTypedDict
     is_error: NotRequired[bool]
     name: NotRequired[str]
@@ -60,9 +58,6 @@ class FunctionResultDeltaTypedDict(TypedDict):
 
 
 class FunctionResultDelta(BaseModel):
-    call_id: str
-    r"""Required. ID to match the ID from the function call block."""
-
     result: FunctionResultDeltaResultUnion
 
     is_error: Optional[bool] = None
