@@ -26,6 +26,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Mapping, Optional, TypeVar, Union, cast
 
+import io
+import json
+import mimetypes
+import os
+
 import httpx
 
 from ._hooks.google_genai_auth import (
@@ -61,6 +66,8 @@ from .credentials import AsyncCredentials as GeneratedAsyncCredentials
 from .credentials import Credentials as GeneratedCredentials
 from .files import AsyncFiles as GeneratedAsyncFiles
 from .files import Files as GeneratedFiles
+from ._internal import AsyncInternal as GeneratedAsyncInternal
+from ._internal import Internal as GeneratedInternal
 
 
 GOOGLE_GENAI_API_REVISION = _GOOGLE_GENAI_API_REVISION
@@ -838,6 +845,7 @@ class AsyncGeminiNextGenTriggers(GeneratedAsyncTriggers):
             return await async_wrap_sdk_call(super().list_executions, *args, **kwargs)
 
 
+
 class GeminiNextGenEnvironmentFiles(GeneratedFiles):
     """Environment files resource backed by the NextGen client."""
 
@@ -849,6 +857,7 @@ class GeminiNextGenEnvironmentFiles(GeneratedFiles):
     ):
         super().__init__(sdk_config, parent_ref=parent_ref)
         self._api_client = api_client
+        self._internal = GeneratedInternal(sdk_config, parent_ref=parent_ref)
 
     if not TYPE_CHECKING:
         @property
@@ -866,17 +875,21 @@ class GeminiNextGenEnvironmentFiles(GeneratedFiles):
     def download(
         self,
         *,
-        environment: str,
         path: str,
+        environment: Optional[str] = None,
+        environment_id: Optional[str] = None,
         http_options: Optional[Any] = None,
     ) -> bytes:
         """Downloads binary file content from an environment workspace."""
         if not self._api_client:
             raise AttributeError('api_client is required to download files.')
+        target_env = environment or environment_id
+        if not target_env:
+            raise ValueError('environment or environment_id is required.')
         env_name = (
-            environment
-            if environment.startswith('environments/')
-            else f'environments/{environment}'
+            target_env
+            if target_env.startswith('environments/')
+            else f'environments/{target_env}'
         )
         clean_path = path.lstrip('/')
         download_path = f'{env_name}/files/{clean_path}?alt=media'
@@ -884,6 +897,111 @@ class GeminiNextGenEnvironmentFiles(GeneratedFiles):
             download_path,
             http_options=http_options,
         )
+
+    def upload(
+        self,
+        *,
+        path: str,
+        file: Union[str, os.PathLike[str], io.IOBase, bytes],
+        environment: Optional[str] = None,
+        environment_id: Optional[str] = None,
+        mime_type: Optional[str] = None,
+        overwrite: Optional[bool] = None,
+        extract: Optional[bool] = None,
+        http_options: Optional[Any] = None,
+    ) -> Union[environments.GetEnvironmentFilesResponse, Any]:
+        """Uploads a file or extracts an archive inside an environment workspace."""
+        if not self._api_client:
+            raise AttributeError('api_client is required to upload files.')
+        target_env = environment or environment_id
+        if not target_env:
+            raise ValueError('environment or environment_id is required.')
+        clean_env = (
+            target_env.removeprefix('environments/')
+            if target_env.startswith('environments/')
+            else target_env
+        )
+        clean_path = path.lstrip('/')
+
+        file_obj: Union[str, io.IOBase]
+        if isinstance(file, (bytes, bytearray)):
+            file_obj = io.BytesIO(file)
+            size_bytes = len(file)
+        elif isinstance(file, io.IOBase):
+            file_obj = file
+            offset = file_obj.tell()
+            file_obj.seek(0, os.SEEK_END)
+            size_bytes = file_obj.tell() - offset
+            file_obj.seek(offset, os.SEEK_SET)
+        else:
+            fs_path = os.fspath(file)
+            if not fs_path or not os.path.isfile(fs_path):
+                raise FileNotFoundError(f'{file} is not a valid file path.')
+            size_bytes = os.path.getsize(fs_path)
+            file_obj = fs_path
+            if mime_type is None:
+                mime_type, _ = mimetypes.guess_type(fs_path)
+
+        if mime_type is None:
+            mime_type = 'application/octet-stream'
+
+        req_api_version = (
+            (
+                http_options.get('api_version')
+                if isinstance(http_options, dict)
+                else getattr(http_options, 'api_version', None)
+            )
+            or self._api_client._http_options.api_version
+            or 'v1alpha'
+        ).lstrip('/')
+
+        handshake_res = self._internal.start_upload(
+            environment=clean_env,
+            path=clean_path,
+            x_goog_upload_header_content_length=size_bytes,
+            x_goog_upload_header_content_type=mime_type,
+            api_version=req_api_version,
+            extract=extract,
+            overwrite=overwrite,
+        )
+
+        upload_urls = (
+            handshake_res.headers.get('x-goog-upload-url')
+            or handshake_res.headers.get('X-Goog-Upload-URL')
+        )
+        if not upload_urls:
+            raise KeyError(
+                'Failed to upload file: Upload URL was not returned from the upload request.'
+            )
+        upload_url = upload_urls[0] if isinstance(upload_urls, list) else upload_urls
+
+        upload_response = self._api_client.upload_file(
+            file_obj,
+            upload_url,
+            size_bytes,
+            http_options=http_options,
+        )
+
+        body_text = (
+            upload_response.response_stream[0]
+            if upload_response and upload_response.response_stream
+            else '{}'
+        )
+        try:
+            res_json = json.loads(body_text) if body_text else {}
+        except Exception:
+            return body_text
+
+        if isinstance(res_json, dict):
+            if 'files' in res_json and isinstance(res_json['files'], list):
+                return environments.GetEnvironmentFilesResponse.model_validate(res_json)
+            elif 'name' in res_json or 'path' in res_json:
+                file_obj = environments.EnvironmentFile.model_validate(res_json)
+                return environments.GetEnvironmentFilesResponse(files=[file_obj])
+            elif 'file' in res_json and isinstance(res_json['file'], dict):
+                file_obj = environments.EnvironmentFile.model_validate(res_json['file'])
+                return environments.GetEnvironmentFilesResponse(files=[file_obj])
+        return res_json
 
 
 class AsyncGeminiNextGenEnvironmentFiles(GeneratedAsyncFiles):
@@ -897,6 +1015,7 @@ class AsyncGeminiNextGenEnvironmentFiles(GeneratedAsyncFiles):
     ):
         super().__init__(sdk_config, parent_ref=parent_ref)
         self._api_client = api_client
+        self._internal = GeneratedAsyncInternal(sdk_config, parent_ref=parent_ref)
 
     if not TYPE_CHECKING:
         @property
@@ -914,17 +1033,21 @@ class AsyncGeminiNextGenEnvironmentFiles(GeneratedAsyncFiles):
     async def download(
         self,
         *,
-        environment: str,
         path: str,
+        environment: Optional[str] = None,
+        environment_id: Optional[str] = None,
         http_options: Optional[Any] = None,
     ) -> bytes:
         """Downloads binary file content from an environment workspace."""
         if not self._api_client:
             raise AttributeError('api_client is required to download files.')
+        target_env = environment or environment_id
+        if not target_env:
+            raise ValueError('environment or environment_id is required.')
         env_name = (
-            environment
-            if environment.startswith('environments/')
-            else f'environments/{environment}'
+            target_env
+            if target_env.startswith('environments/')
+            else f'environments/{target_env}'
         )
         clean_path = path.lstrip('/')
         download_path = f'{env_name}/files/{clean_path}?alt=media'
@@ -932,6 +1055,111 @@ class AsyncGeminiNextGenEnvironmentFiles(GeneratedAsyncFiles):
             download_path,
             http_options=http_options,
         )
+
+    async def upload(
+        self,
+        *,
+        path: str,
+        file: Union[str, os.PathLike[str], io.IOBase, bytes],
+        environment: Optional[str] = None,
+        environment_id: Optional[str] = None,
+        mime_type: Optional[str] = None,
+        overwrite: Optional[bool] = None,
+        extract: Optional[bool] = None,
+        http_options: Optional[Any] = None,
+    ) -> Union[environments.GetEnvironmentFilesResponse, Any]:
+        """Uploads a file or extracts an archive inside an environment workspace."""
+        if not self._api_client:
+            raise AttributeError('api_client is required to upload files.')
+        target_env = environment or environment_id
+        if not target_env:
+            raise ValueError('environment or environment_id is required.')
+        clean_env = (
+            target_env.removeprefix('environments/')
+            if target_env.startswith('environments/')
+            else target_env
+        )
+        clean_path = path.lstrip('/')
+
+        file_obj: Union[str, io.IOBase]
+        if isinstance(file, (bytes, bytearray)):
+            file_obj = io.BytesIO(file)
+            size_bytes = len(file)
+        elif isinstance(file, io.IOBase):
+            file_obj = file
+            offset = file_obj.tell()
+            file_obj.seek(0, os.SEEK_END)
+            size_bytes = file_obj.tell() - offset
+            file_obj.seek(offset, os.SEEK_SET)
+        else:
+            fs_path = os.fspath(file)
+            if not fs_path or not os.path.isfile(fs_path):
+                raise FileNotFoundError(f'{file} is not a valid file path.')
+            size_bytes = os.path.getsize(fs_path)
+            file_obj = fs_path
+            if mime_type is None:
+                mime_type, _ = mimetypes.guess_type(fs_path)
+
+        if mime_type is None:
+            mime_type = 'application/octet-stream'
+
+        req_api_version = (
+            (
+                http_options.get('api_version')
+                if isinstance(http_options, dict)
+                else getattr(http_options, 'api_version', None)
+            )
+            or self._api_client._http_options.api_version
+            or 'v1alpha'
+        ).lstrip('/')
+
+        handshake_res = await self._internal.start_upload(
+            environment=clean_env,
+            path=clean_path,
+            x_goog_upload_header_content_length=size_bytes,
+            x_goog_upload_header_content_type=mime_type,
+            api_version=req_api_version,
+            extract=extract,
+            overwrite=overwrite,
+        )
+
+        upload_urls = (
+            handshake_res.headers.get('x-goog-upload-url')
+            or handshake_res.headers.get('X-Goog-Upload-URL')
+        )
+        if not upload_urls:
+            raise KeyError(
+                'Failed to upload file: Upload URL was not returned from the upload request.'
+            )
+        upload_url = upload_urls[0] if isinstance(upload_urls, list) else upload_urls
+
+        upload_response = await self._api_client.async_upload_file(
+            file_obj,
+            upload_url,
+            size_bytes,
+            http_options=http_options,
+        )
+
+        body_text = (
+            upload_response.response_stream[0]
+            if upload_response and upload_response.response_stream
+            else '{}'
+        )
+        try:
+            res_json = json.loads(body_text) if body_text else {}
+        except Exception:
+            return body_text
+
+        if isinstance(res_json, dict):
+            if 'files' in res_json and isinstance(res_json['files'], list):
+                return environments.GetEnvironmentFilesResponse.model_validate(res_json)
+            elif 'name' in res_json or 'path' in res_json:
+                file_obj = environments.EnvironmentFile.model_validate(res_json)
+                return environments.GetEnvironmentFilesResponse(files=[file_obj])
+            elif 'file' in res_json and isinstance(res_json['file'], dict):
+                file_obj = environments.EnvironmentFile.model_validate(res_json['file'])
+                return environments.GetEnvironmentFilesResponse(files=[file_obj])
+        return res_json
 
 
 class GeminiNextGenEnvironments(GeneratedEnvironments):

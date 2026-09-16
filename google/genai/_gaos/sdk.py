@@ -58,16 +58,16 @@ class GenAI(BaseSDK):
     def with_streaming_response(self):
         return GenAIWithStreamingResponse(self)
 
+    environments: "Environments"
     agents: "Agents"
     credentials: "Credentials"
-    environments: "Environments"
     interactions: "Interactions"
     triggers: "Triggers"
     webhooks: "Webhooks"
     _sub_sdk_map = {
+        "environments": (".environments", "Environments"),
         "agents": (".agents", "Agents"),
         "credentials": (".credentials", "Credentials"),
-        "environments": (".environments", "Environments"),
         "interactions": (".interactions", "Interactions"),
         "triggers": (".triggers", "Triggers"),
         "webhooks": (".webhooks", "Webhooks"),
@@ -215,16 +215,16 @@ class GenAIWithRawResponse:
         self._sdk = sdk
 
     @property
+    def environments(self):
+        return self._sdk.environments.with_raw_response
+
+    @property
     def agents(self):
         return self._sdk.agents.with_raw_response
 
     @property
     def credentials(self):
         return self._sdk.credentials.with_raw_response
-
-    @property
-    def environments(self):
-        return self._sdk.environments.with_raw_response
 
     @property
     def interactions(self):
@@ -244,16 +244,16 @@ class GenAIWithStreamingResponse:
         self._sdk = sdk
 
     @property
+    def environments(self):
+        return self._sdk.environments.with_streaming_response
+
+    @property
     def agents(self):
         return self._sdk.agents.with_streaming_response
 
     @property
     def credentials(self):
         return self._sdk.credentials.with_streaming_response
-
-    @property
-    def environments(self):
-        return self._sdk.environments.with_streaming_response
 
     @property
     def interactions(self):
@@ -279,16 +279,16 @@ class AsyncGenAI(AsyncBaseSDK):
     def with_streaming_response(self):
         return AsyncGenAIWithStreamingResponse(self)
 
+    environments: "AsyncEnvironments"
     agents: "AsyncAgents"
     credentials: "AsyncCredentials"
-    environments: "AsyncEnvironments"
     interactions: "AsyncInteractions"
     triggers: "AsyncTriggers"
     webhooks: "AsyncWebhooks"
     _sub_sdk_map = {
+        "environments": (".environments", "AsyncEnvironments"),
         "agents": (".agents", "AsyncAgents"),
         "credentials": (".credentials", "AsyncCredentials"),
-        "environments": (".environments", "AsyncEnvironments"),
         "interactions": (".interactions", "AsyncInteractions"),
         "triggers": (".triggers", "AsyncTriggers"),
         "webhooks": (".webhooks", "AsyncWebhooks"),
@@ -434,16 +434,16 @@ class AsyncGenAIWithRawResponse:
         self._sdk = sdk
 
     @property
+    def environments(self):
+        return self._sdk.environments.with_raw_response
+
+    @property
     def agents(self):
         return self._sdk.agents.with_raw_response
 
     @property
     def credentials(self):
         return self._sdk.credentials.with_raw_response
-
-    @property
-    def environments(self):
-        return self._sdk.environments.with_raw_response
 
     @property
     def interactions(self):
@@ -463,16 +463,16 @@ class AsyncGenAIWithStreamingResponse:
         self._sdk = sdk
 
     @property
+    def environments(self):
+        return self._sdk.environments.with_streaming_response
+
+    @property
     def agents(self):
         return self._sdk.agents.with_streaming_response
 
     @property
     def credentials(self):
         return self._sdk.credentials.with_streaming_response
-
-    @property
-    def environments(self):
-        return self._sdk.environments.with_streaming_response
 
     @property
     def interactions(self):
