@@ -33,11 +33,11 @@ from typing import Dict, List, Literal, Optional, Union
 from typing_extensions import Annotated, NotRequired, TypeAliasType, TypedDict
 
 
-EnvParam = TypeAliasType("EnvParam", Union[Dict[str, EnvVarParam], str])
+EnvParam = TypeAliasType("EnvParam", Union[EnvVarParam, Dict[str, EnvVarParam]])
 r"""Environment variables to set in the sandbox environment."""
 
 
-Env = TypeAliasType("Env", Union[Dict[str, EnvVar], str])
+Env = TypeAliasType("Env", Union[EnvVar, Dict[str, EnvVar]])
 r"""Environment variables to set in the sandbox environment."""
 
 
