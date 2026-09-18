@@ -317,6 +317,7 @@ if TYPE_CHECKING:
     from .ragretrievalconfig import RagRetrievalConfig, RagRetrievalConfigParam
     from .ragstoreconfig import RagStoreConfig, RagStoreConfigParam
     from .ranking import Ranking, RankingParam
+    from .rankservice import RankService, RankServiceParam
     from .responseformat import ResponseFormat, ResponseFormatParam
     from .responsemodality import ResponseModality
     from .retrieval import Retrieval, RetrievalParam, RetrievalRetrievalType
@@ -702,6 +703,8 @@ __all__ = [
     "RagRetrievalConfigParam",
     "RagStoreConfig",
     "RagStoreConfigParam",
+    "RankService",
+    "RankServiceParam",
     "Ranking",
     "RankingParam",
     "Resolution",
@@ -1117,6 +1120,8 @@ _dynamic_imports: dict[str, str] = {
     "RagStoreConfigParam": ".ragstoreconfig",
     "Ranking": ".ranking",
     "RankingParam": ".ranking",
+    "RankService": ".rankservice",
+    "RankServiceParam": ".rankservice",
     "ResponseFormat": ".responseformat",
     "ResponseFormatParam": ".responseformat",
     "ResponseModality": ".responsemodality",

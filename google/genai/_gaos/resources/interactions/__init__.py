@@ -68,7 +68,6 @@ from ...types.interactions.googlesearchcallstep import GoogleSearchCallStep
 from ...types.interactions.googlesearchresult import GoogleSearchResult
 from ...types.interactions.googlesearchresultstep import GoogleSearchResultStep
 from ...types.interactions.harmcategory import HarmCategory
-from ...types.interactions.imageconfig import ImageConfig
 from ...types.interactions.imagecontent import ImageContent
 from ...types.interactions.imageresponseformat import ImageResponseFormat
 from ...types.interactions.interaction import Interaction
@@ -174,7 +173,6 @@ __all__ = [
     "GoogleSearchResult",
     "GoogleSearchResultStep",
     "HarmCategory",
-    "ImageConfig",
     "ImageContent",
     "ImageResponseFormat",
     "Interaction",
