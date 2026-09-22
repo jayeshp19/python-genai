@@ -2022,6 +2022,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.batches"><code class="docutils literal notranslate"><span class="pre">AsyncClient.batches</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.caches"><code class="docutils literal notranslate"><span class="pre">AsyncClient.caches</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.chats"><code class="docutils literal notranslate"><span class="pre">AsyncClient.chats</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.credentials"><code class="docutils literal notranslate"><span class="pre">AsyncClient.credentials</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.environments"><code class="docutils literal notranslate"><span class="pre">AsyncClient.environments</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.file_search_stores"><code class="docutils literal notranslate"><span class="pre">AsyncClient.file_search_stores</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.files"><code class="docutils literal notranslate"><span class="pre">AsyncClient.files</span></code></a></li>
@@ -2031,6 +2032,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.operations"><code class="docutils literal notranslate"><span class="pre">AsyncClient.operations</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.triggers"><code class="docutils literal notranslate"><span class="pre">AsyncClient.triggers</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.tunings"><code class="docutils literal notranslate"><span class="pre">AsyncClient.tunings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.voices"><code class="docutils literal notranslate"><span class="pre">AsyncClient.voices</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.AsyncClient.webhooks"><code class="docutils literal notranslate"><span class="pre">AsyncClient.webhooks</span></code></a></li>
 </ul>
 </li>
@@ -2050,6 +2052,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.caches"><code class="docutils literal notranslate"><span class="pre">Client.caches</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.chats"><code class="docutils literal notranslate"><span class="pre">Client.chats</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.close"><code class="docutils literal notranslate"><span class="pre">Client.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#id0"><code class="docutils literal notranslate"><span class="pre">Client.credentials</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.environments"><code class="docutils literal notranslate"><span class="pre">Client.environments</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.file_search_stores"><code class="docutils literal notranslate"><span class="pre">Client.file_search_stores</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.files"><code class="docutils literal notranslate"><span class="pre">Client.files</span></code></a></li>
@@ -2058,7 +2061,8 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.operations"><code class="docutils literal notranslate"><span class="pre">Client.operations</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.triggers"><code class="docutils literal notranslate"><span class="pre">Client.triggers</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.tunings"><code class="docutils literal notranslate"><span class="pre">Client.tunings</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="genai.html#id0"><code class="docutils literal notranslate"><span class="pre">Client.vertexai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#id6"><code class="docutils literal notranslate"><span class="pre">Client.vertexai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.voices"><code class="docutils literal notranslate"><span class="pre">Client.voices</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.client.Client.webhooks"><code class="docutils literal notranslate"><span class="pre">Client.webhooks</span></code></a></li>
 </ul>
 </li>
@@ -3265,10 +3269,12 @@ The structure of the dictionary must match the backend API’s request structure
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpec"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpec</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpec.code_execution_region"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpec.code_execution_region</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpec.evaluation_function"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpec.evaluation_function</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpecDict"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpecDict</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpecDict.code_execution_region"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpecDict.code_execution_region</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.CustomCodeExecutionSpecDict.evaluation_function"><code class="docutils literal notranslate"><span class="pre">CustomCodeExecutionSpecDict.evaluation_function</span></code></a></li>
 </ul>
 </li>
@@ -3848,10 +3854,12 @@ The structure of the dictionary must match the backend API’s request structure
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfig"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfig.code_execution_region"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfig.code_execution_region</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfig.parsing_function"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfig.parsing_function</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfigDict"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfigDict</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfigDict.code_execution_region"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfigDict.code_execution_region</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.EvaluationParserConfigCustomCodeParserConfigDict.parsing_function"><code class="docutils literal notranslate"><span class="pre">EvaluationParserConfigCustomCodeParserConfigDict.parsing_function</span></code></a></li>
 </ul>
 </li>
@@ -6757,12 +6765,14 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExample.contents"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExample.contents</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExample.references"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExample.references</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExample.system_instruction"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExample.system_instruction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExample.tools"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExample.tools</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExampleDict"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExampleDict</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExampleDict.contents"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExampleDict.contents</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExampleDict.references"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExampleDict.references</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExampleDict.system_instruction"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExampleDict.system_instruction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningExampleDict.tools"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningExampleDict.tools</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningHyperParameters"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningHyperParameters</span></code></a><ul>
@@ -6804,11 +6814,13 @@ The structure of the dictionary must match the backend API’s request structure
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfo"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfo.error_status"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfo.error_status</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfo.reward"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfo.reward</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfo.user_requested_aux_info"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfo.user_requested_aux_info</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfoDict"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfoDict</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfoDict.error_status"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfoDict.error_status</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfoDict.reward"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfoDict.reward</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.ReinforcementTuningRewardInfoDict.user_requested_aux_info"><code class="docutils literal notranslate"><span class="pre">ReinforcementTuningRewardInfoDict.user_requested_aux_info</span></code></a></li>
 </ul>
@@ -7699,6 +7711,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.TrafficType"><code class="docutils literal notranslate"><span class="pre">TrafficType</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.ON_DEMAND"><code class="docutils literal notranslate"><span class="pre">TrafficType.ON_DEMAND</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.ON_DEMAND_FLEX"><code class="docutils literal notranslate"><span class="pre">TrafficType.ON_DEMAND_FLEX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.ON_DEMAND_OFFPEAK"><code class="docutils literal notranslate"><span class="pre">TrafficType.ON_DEMAND_OFFPEAK</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.ON_DEMAND_PRIORITY"><code class="docutils literal notranslate"><span class="pre">TrafficType.ON_DEMAND_PRIORITY</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.PROVISIONED_THROUGHPUT"><code class="docutils literal notranslate"><span class="pre">TrafficType.PROVISIONED_THROUGHPUT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.TrafficType.TRAFFIC_TYPE_UNSPECIFIED"><code class="docutils literal notranslate"><span class="pre">TrafficType.TRAFFIC_TYPE_UNSPECIFIED</span></code></a></li>
@@ -8427,6 +8440,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormat.delivery"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormat.delivery</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormat.duration"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormat.duration</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormat.gcs_uri"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormat.gcs_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormat.resolution"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormat.resolution</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormatDict"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormatDict</span></code></a><ul>
@@ -8434,6 +8448,7 @@ The structure of the dictionary must match the backend API’s request structure
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormatDict.delivery"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormatDict.delivery</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormatDict.duration"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormatDict.duration</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormatDict.gcs_uri"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormatDict.gcs_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="genai.html#genai.types.VideoResponseFormatDict.resolution"><code class="docutils literal notranslate"><span class="pre">VideoResponseFormatDict.resolution</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="genai.html#genai.types.VoiceActivity"><code class="docutils literal notranslate"><span class="pre">VoiceActivity</span></code></a><ul>
