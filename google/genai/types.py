@@ -6654,7 +6654,7 @@ class GenerateContentConfig(_common.BaseModel):
   )
   labels: Optional[dict[str, str]] = Field(
       default=None,
-      description="""Labels with user-defined metadata to break down billed charges.""",
+      description="""Labels with user-defined metadata for the request.""",
   )
   cached_content: Optional[str] = Field(
       default=None,
@@ -6887,7 +6887,7 @@ class GenerateContentConfigDict(TypedDict, total=False):
       """
 
   labels: Optional[dict[str, str]]
-  """Labels with user-defined metadata to break down billed charges."""
+  """Labels with user-defined metadata for the request."""
 
   cached_content: Optional[str]
   """Resource name of a context cache that can be used in subsequent
