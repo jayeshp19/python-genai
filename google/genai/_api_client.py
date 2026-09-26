@@ -953,6 +953,20 @@ class BaseApiClient:
       return bool(session._auth_request._closed)
     return False
 
+  @staticmethod
+  def _discard_closed_loop_entries(entries: dict[Any, Any]) -> None:
+    """Drops entries of a loop-keyed cache whose event loop has been closed.
+
+    Servers that run every request on a fresh loop (ADK's sync `Runner.run()`,
+    used by Agent Engine, calls `asyncio.run()` per request) would otherwise
+    grow these caches without bound, pinning one aiohttp session, connector and
+    set of sockets per request served. A session on a closed loop cannot be
+    awaited shut, but dropping the last reference to it lets the garbage
+    collector release the connector and its sockets.
+    """
+    for loop in [loop for loop in entries if loop.is_closed()]:
+      del entries[loop]
+
   @property
   def _aiohttp_session(
       self,
@@ -976,6 +990,7 @@ class BaseApiClient:
     loop = asyncio.get_running_loop()
 
     with self._sync_auth_lock:
+      self._discard_closed_loop_entries(self._aiohttp_sessions)
       session = self._aiohttp_sessions.get(loop)
       if session is not None and self._is_session_closed(session):
         session = None
@@ -1319,6 +1334,7 @@ class BaseApiClient:
     """
     loop = asyncio.get_running_loop()
     with self._sync_auth_lock:
+      self._discard_closed_loop_entries(self._async_auth_locks)
       if loop not in self._async_auth_locks:
         self._async_auth_locks[loop] = asyncio.Lock()
       return self._async_auth_locks[loop]
