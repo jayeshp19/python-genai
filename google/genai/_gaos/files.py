@@ -51,8 +51,8 @@ class Files(BaseSDK):
     ) -> environments.GetEnvironmentFilesResponse:
         r"""Retrieves file metadata or directory contents from an environment's snapshot. To download file content, use the download URL returned in the response.
 
-        :param environment:
-        :param path:
+        :param environment: The ID of the environment whose snapshot to read.
+        :param path: Path of the file or directory inside the environment workspace, relative to its root (e.g. src).
         :param api_version: API version for request routing.
         :param page_size: Optional. Maximum number of entries to return per page (for directory listing).
         :param page_token: Optional. Pagination token for directory listing.
@@ -237,8 +237,8 @@ class AsyncFiles(AsyncBaseSDK):
     ) -> environments.GetEnvironmentFilesResponse:
         r"""Retrieves file metadata or directory contents from an environment's snapshot. To download file content, use the download URL returned in the response.
 
-        :param environment:
-        :param path:
+        :param environment: The ID of the environment whose snapshot to read.
+        :param path: Path of the file or directory inside the environment workspace, relative to its root (e.g. src).
         :param api_version: API version for request routing.
         :param page_size: Optional. Maximum number of entries to return per page (for directory listing).
         :param page_token: Optional. Pagination token for directory listing.
