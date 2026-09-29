@@ -20,7 +20,9 @@
 from __future__ import annotations
 from datetime import datetime
 from .. import BaseModel, UNSET_SENTINEL, UnrecognizedStr
-from ..interactions import interaction as interactions_interaction
+from ..interactions import (
+    createagentinteraction as interactions_createagentinteraction,
+)
 from pydantic import model_serializer
 from typing import Literal, Optional, Union
 from typing_extensions import NotRequired, TypedDict
@@ -42,8 +44,8 @@ class TriggerTypedDict(TypedDict):
 
     id: str
     r"""Required. Output only. Identifier. The ID of the trigger."""
-    interaction: interactions_interaction.InteractionTypedDict
-    r"""The Interaction resource."""
+    interaction: interactions_createagentinteraction.CreateAgentInteractionParam
+    r"""Interaction for generating the completion using agents."""
     schedule: str
     r"""Required. The cron schedule on which the trigger should run.
     Standard cron format.
@@ -88,8 +90,8 @@ class Trigger(BaseModel):
     id: str
     r"""Required. Output only. Identifier. The ID of the trigger."""
 
-    interaction: interactions_interaction.Interaction
-    r"""The Interaction resource."""
+    interaction: interactions_createagentinteraction.CreateAgentInteraction
+    r"""Interaction for generating the completion using agents."""
 
     schedule: str
     r"""Required. The cron schedule on which the trigger should run.
