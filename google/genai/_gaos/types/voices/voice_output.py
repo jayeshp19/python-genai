@@ -50,8 +50,10 @@ class VoiceOutputTypedDict(TypedDict):
     """
     expire_time: NotRequired[datetime]
     r"""Output only. The timestamp at which a custom stored voice (`store = true`)
-    or replicated voice key (`store = false`) expires. Unset for prebuilt
-    catalog voices (`\"prebuilt\"`), which do not expire.
+    or replicated voice key (`store = false`) expires. For custom stored voices
+    (`store = true`), this expiration time is extended when the voice is used
+    for speech synthesis or as a `base_voice` in `CreateVoice`. Unset for
+    prebuilt catalog voices (`\"prebuilt\"`), which do not expire.
     """
     gender: NotRequired[str]
     r"""Optional. Perceived voice gender presentation (e.g. \"female\", \"male\",
@@ -130,8 +132,10 @@ class VoiceOutput(BaseModel):
 
     expire_time: Optional[datetime] = None
     r"""Output only. The timestamp at which a custom stored voice (`store = true`)
-    or replicated voice key (`store = false`) expires. Unset for prebuilt
-    catalog voices (`\"prebuilt\"`), which do not expire.
+    or replicated voice key (`store = false`) expires. For custom stored voices
+    (`store = true`), this expiration time is extended when the voice is used
+    for speech synthesis or as a `base_voice` in `CreateVoice`. Unset for
+    prebuilt catalog voices (`\"prebuilt\"`), which do not expire.
     """
 
     gender: Optional[str] = None
